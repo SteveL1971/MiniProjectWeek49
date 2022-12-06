@@ -123,7 +123,6 @@ void addAsset() // Adds an asset to assetList. Requires an Item, Office and a va
             }
         }
 
-
         var value = -1; // intended to validate int input, but is redundant because int check failure changes this value to 0 regardless
         bool isInt = false;
         if (selectedItem == -1)
@@ -173,7 +172,6 @@ void addAsset() // Adds an asset to assetList. Requires an Item, Office and a va
                 goto loopStart;
             }
 
-
             if (!allSelected) // run if no office is chosen
             {
                 Console.WriteLine("\nChoose an office");
@@ -205,8 +203,6 @@ void addAsset() // Adds an asset to assetList. Requires an Item, Office and a va
                     switch (value) // handles menu choices. 
                     {
                         case 1: // make a date from today's date
-                            
-
                             asset.Item = sortedList[selectedItem];
                             asset.Office = offices[selectedOffice];
                             asset.PurchaseDate = DateTime.Now;
@@ -250,9 +246,6 @@ void addAsset() // Adds an asset to assetList. Requires an Item, Office and a va
                             catch (Exception e)  // handles an invalid date by informing user and moving back to loopStart; 
                             {
                                 colouredText("\nInvalid date!", "red");
-                                //Console.ForegroundColor = ConsoleColor.Red;
-                                //Console.WriteLine("\nInvalid date!");
-                                //Console.ResetColor();
                                 Thread.Sleep(1000);
                                 goto loopStart;
                             }
