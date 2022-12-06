@@ -27,16 +27,21 @@ while (menuLoop)
             displayItems();
             break;
         case ConsoleKey.D3:
+            Console.WriteLine(" - Edit/Delete items\n");
+            Thread.Sleep(200);
+            editItem();
+            break;
+        case ConsoleKey.D4:
             Console.WriteLine(" - Add an asset\n");
             Thread.Sleep(200);
             addAsset();
             break;
-        case ConsoleKey.D4:
+        case ConsoleKey.D5:
             Console.WriteLine(" - List assets\n");
             Thread.Sleep(200);
             displayAssets();
             break;
-        case ConsoleKey.D5:
+        case ConsoleKey.D6:
             Console.WriteLine(" - Quit application");
             menuLoop = false;
             Thread.Sleep(200);
@@ -57,29 +62,22 @@ void mainMenuText() // Funktion which creates and displays the main menu in the 
 {
     Console.WriteLine("\nChoose from the following options:\n");
     Console.Write("(");
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("1");
-    Console.ResetColor();
+    colouredText("1","yellow");
     Console.WriteLine(") Add an item");
     Console.Write("(");
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("2");
-    Console.ResetColor();
+    colouredText("2", "yellow");
     Console.WriteLine(") List all items");
     Console.Write("(");
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("3");
-    Console.ResetColor();
+    colouredText("3", "yellow");
+    Console.WriteLine(") Edit/Delete an item");
+    Console.Write("(");
+    colouredText("4", "yellow");
     Console.WriteLine(") Add an asset");
     Console.Write("(");
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("4");
-    Console.ResetColor();
+    colouredText("5", "yellow");
     Console.WriteLine(") List all assets");
     Console.Write("(");
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.Write("5");
-    Console.ResetColor();
+    colouredText("6", "yellow");
     Console.WriteLine(") Quit Application\n");
 }
 
@@ -251,9 +249,10 @@ void addAsset() // Adds an asset to assetList. Requires an Item, Office and a va
                             }
                             catch (Exception e)  // handles an invalid date by informing user and moving back to loopStart; 
                             {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("\nInvalid date!");
-                                Console.ResetColor();
+                                colouredText("\nInvalid date!", "red");
+                                //Console.ForegroundColor = ConsoleColor.Red;
+                                //Console.WriteLine("\nInvalid date!");
+                                //Console.ResetColor();
                                 Thread.Sleep(1000);
                                 goto loopStart;
                             }
@@ -271,6 +270,7 @@ loopStart:
     titleText();
     Console.WriteLine("Select a Type:\n");
     Console.Write("(");
+
     Console.ForegroundColor = ConsoleColor.Yellow;
     Console.Write("1");
     Console.ResetColor();
@@ -363,6 +363,15 @@ void createItem(string type, string brand, string model, int price) // Function 
 void displayItems() // Fuction that loops through a sorted itemList to display all Items
 {
     titleText();
+    listItems();
+
+    Console.WriteLine("\nPress any key to return to main menu");
+    Console.ReadLine();
+    Thread.Sleep(200);
+}
+
+void listItems()
+{
     Console.WriteLine("\nAll items listed:\n");
     Console.ForegroundColor = ConsoleColor.Blue;
     Console.WriteLine("    " + "Type".PadRight(14) + " " + "Brand".PadRight(14) + " " + "Model".PadRight(14) + " " + "Price".ToString().PadRight(14));
@@ -380,9 +389,6 @@ void displayItems() // Fuction that loops through a sorted itemList to display a
         Console.WriteLine(sortedList[i].GetType().Name.ToString().PadRight(14) + " " + sortedList[i].Brand.PadRight(14) + " " + sortedList[i].Model.PadRight(14) + " $" + sortedList[i].Price.ToString().PadRight(14));
 
     }
-    Console.WriteLine("\nPress any key to return to main menu");
-    Console.ReadLine();
-    Thread.Sleep(200);
 }
 
 void displayAssets() // Function that loops through a sorted assetList to display all Assets
@@ -409,9 +415,161 @@ void displayAssets() // Function that loops through a sorted assetList to displa
     Thread.Sleep(200);
 }
 
+void colouredText(string text, string colour) // displays text with chosen colour
+{
+    switch (colour)
+    {
+        case "purple":
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            break;
+        case "red":
+            Console.ForegroundColor = ConsoleColor.Red;
+            break;
+        case "green":
+            Console.ForegroundColor = ConsoleColor.Green;
+            break;
+        case "blue":
+            Console.ForegroundColor = ConsoleColor.Blue;
+            break;
+        case "yellow":
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            break;
+        default:
+            Console.ForegroundColor = ConsoleColor.White;
+            break;
+    }
+    Console.Write(text);
+    Console.ResetColor();
+}
 
+// handles editing and deleting a task
+void editItem()
+{
+    while (true)
+    {
+        titleText();
+        listItems();
+        Console.WriteLine("\nChoose a task to edit or (q) to return to main menu: ");
+        var data = Console.ReadLine();
+        bool isInt = int.TryParse(data, out int listIndex);
+        List<Item> unsortedList = context.Items.ToList();
+        List<Item> sortedList = unsortedList.OrderBy(o => o.GetType().Name.ToString()).ThenBy(o => o.Brand).ToList();
+        if (isInt && listIndex >= 1 && listIndex <= sortedList.Count)
+        {
+            Item item = sortedList[listIndex - 1];
+            bool keepLooping = true;
+            while (keepLooping == true)
+            {
+            loopStart:
+                titleText();
+                sortedList[listIndex - 1].printDetails(listIndex - 1);
+                Console.Write("\n\nEdit task options:\n\n(");
+                colouredText("1", "purple");
+                Console.WriteLine(") Change brand");
+                Console.Write("(");
+                colouredText("2", "purple");
+                Console.WriteLine(") Change model");
+                Console.Write("(");
+                colouredText("3", "purple");
+                Console.WriteLine(") Change price");
+                Console.Write("(");
+                colouredText("4", "purple");
+                Console.WriteLine(") Delete task");
 
-
+                Console.WriteLine("\nChoose from menu (q) to return to previous page: ");
+                int value = 0;
+                data = Console.ReadLine();
+                isInt = int.TryParse(data, out value);
+                if (isInt && value >= 1 && value <= 4)
+                {
+                    switch (value)
+                    {
+                        case 1:
+                            Console.WriteLine("\nEnter a new brand");
+                            data = Console.ReadLine();
+                            if (data != null && data.Length > 0)
+                            {
+                                Item itemToEdit = context.Items.FirstOrDefault(x => x.Id == Convert.ToInt32(listIndex - 1));
+                                item.Brand = data;
+                                context.Items.Update(itemToEdit);
+                                context.SaveChanges();
+                                colouredText("\nBrand changed to '" + data + "'", "green");
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                colouredText("Brand can't be blank!", "red");
+                                Thread.Sleep(1000);
+                            }
+                            break;
+                        case 2:
+                            Console.WriteLine("\nEnter a new model");
+                            data = Console.ReadLine();
+                            if (data != null && data.Length > 0)
+                            {
+                                Item itemToEdit = context.Items.FirstOrDefault(x => x.Id == Convert.ToInt32(listIndex - 1));
+                                item.Model = data;
+                                context.Items.Update(itemToEdit);
+                                context.SaveChanges();
+                                colouredText("\nModel changed to '" + data + "'", "green");
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                colouredText("Model can't be blank!", "red");
+                                Thread.Sleep(1000);
+                            }
+                            break; 
+                        case 3:
+                            Console.WriteLine("\nEnter a new price");
+                            data = Console.ReadLine();
+                            isInt = int.TryParse(data, out value);
+                            if (data != null && data.Length > 0 && isInt)
+                            {
+                                Item itemToEdit = context.Items.FirstOrDefault(x => x.Id == Convert.ToInt32(listIndex - 1));
+                                item.Price = value;
+                                context.Items.Update(itemToEdit);
+                                context.SaveChanges();
+                                colouredText("\nPrice changed to '$" + data + "'", "green");
+                                Thread.Sleep(1000);
+                            }
+                            else
+                            {
+                                colouredText("Price must be an integer!", "red");
+                                Thread.Sleep(1000);
+                            }
+                            break;
+                        case 4:
+                            Console.Write("\nAre you sure you want to delete item '");
+                            colouredText(item.Model, "blue");
+                            Console.Write("'?");
+                            Console.WriteLine("\n\nConfirm with (y) or any other key to return");
+                            data = Console.ReadLine();
+                            if (data.ToLower() == "y")
+                            {
+                                context.Items.Remove(item);
+                                context.SaveChanges();
+                                colouredText("\nThe item has been deleted!", "green");
+                                Thread.Sleep(1000);
+                            }
+                            keepLooping = false;
+                            break;
+                    }
+                }
+                else
+                {
+                    if (data == "q") break;
+                }
+                if (keepLooping == false) break;
+            }
+        }
+        else
+        {
+            if (data == "q") break;
+        }
+        Thread.Sleep(200);
+    }
+}
 
 
 
